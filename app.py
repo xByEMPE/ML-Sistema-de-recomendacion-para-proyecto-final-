@@ -29,7 +29,7 @@ def load_and_process_data():
     FROM `{PROJECT_ID}.{DATASET_ID}.Business` AS b
     LEFT JOIN `{PROJECT_ID}.{DATASET_ID}.TipYelp` AS t
       ON b.business_id = t.business_id
-    LIMIT 1000
+    LIMIT 500
     """
     
     df = client.query(query).to_dataframe()
