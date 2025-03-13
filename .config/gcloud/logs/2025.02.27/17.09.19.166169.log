@@ -1,0 +1,10 @@
+2025-02-27 17:09:19,203 DEBUG    root            Loaded Command Group: ['gcloud', 'projects']
+2025-02-27 17:09:19,212 DEBUG    root            Loaded Command Group: ['gcloud', 'projects', 'describe']
+2025-02-27 17:09:19,215 DEBUG    root            Running [gcloud.projects.describe] with arguments: [--format: "value(projectNumber)", PROJECT_ID_OR_NUMBER: "robotic-aviary-451823-k6"]
+2025-02-27 17:09:19,288 DEBUG    urllib3.connectionpool Starting new HTTPS connection (1): cloudresourcemanager.googleapis.com:443
+2025-02-27 17:09:19,342 DEBUG    urllib3.connectionpool https://cloudresourcemanager.googleapis.com:443 "GET /v1/projects/robotic-aviary-451823-k6?alt=json HTTP/11" 200 None
+2025-02-27 17:09:19,344 DEBUG    root            Chosen display Format:default value(projectNumber)
+2025-02-27 17:09:19,345 INFO     root            Display format: "default value(projectNumber)"
+2025-02-27 17:09:19,362 INFO     ___FILE_ONLY___ 389142445548
+
+2025-02-27 17:09:19,362 DEBUG    root            SDK update checks are disabled.
