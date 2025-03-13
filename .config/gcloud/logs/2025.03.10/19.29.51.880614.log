@@ -1,8 +1,0 @@
-2025-03-10 19:29:51,885 DEBUG    root            Loaded Command Group: ['gcloud', 'config']
-2025-03-10 19:29:51,899 DEBUG    root            Loaded Command Group: ['gcloud', 'config', 'get_value']
-2025-03-10 19:29:51,902 DEBUG    root            Running [gcloud.config.get-value] with arguments: [SECTION/PROPERTY: "project"]
-2025-03-10 19:29:51,913 DEBUG    root            Chosen display Format:value(.)
-2025-03-10 19:29:51,914 INFO     root            Display format: "value(.)"
-2025-03-10 19:29:51,914 INFO     ___FILE_ONLY___ robotic-aviary-451823-k6
-
-2025-03-10 19:29:51,914 DEBUG    root            SDK update checks are disabled.
