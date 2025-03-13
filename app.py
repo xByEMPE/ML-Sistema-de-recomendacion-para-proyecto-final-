@@ -5,7 +5,7 @@ from google.cloud import bigquery
 from textblob import TextBlob
 import numpy as np
 
-# Configuración del proyecto y dataset (los datos son públicos, no se requiere autenticación especial)
+# Configuración del proyecto y dataset (datos públicos, no se requiere autenticación especial)
 PROJECT_ID = "robotic-aviary-451823-k6"
 DATASET_ID = "cargaAzure"
 
@@ -29,6 +29,7 @@ def load_and_process_data():
     FROM `{PROJECT_ID}.{DATASET_ID}.Business` AS b
     LEFT JOIN `{PROJECT_ID}.{DATASET_ID}.TipYelp` AS t
       ON b.business_id = t.business_id
+    LIMIT 1000
     """
     
     df = client.query(query).to_dataframe()
@@ -83,27 +84,44 @@ def recommend_restaurants(df_sentiment, food_type=None, min_rating=None, state=N
     return df_filter[columns].head(top_n)
 
 # ---------------------------------------------------------------------
-# Interfaz de la app con Streamlit
+# Interfaz de la app con Streamlit (más llamativa)
 # ---------------------------------------------------------------------
 def main():
-    st.title("Recomendador de Restaurantes")
-    st.write("Encuentra el mejor restaurante de comida basado en reseñas y calificaciones.")
+    # Agregar un banner o imagen (opcional, reemplaza la URL por una propia)
+    st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=200)
     
-    # Cargar y procesar los datos (se cachea para mayor velocidad)
-    df_sentiment = load_and_process_data()
+    st.title("🍽️ Recomendador de Restaurantes")
+    st.markdown("### Encuentra el mejor restaurante para ti basado en reseñas y calificaciones")
+    st.markdown("Utiliza los filtros de la barra lateral para especificar el tipo de comida, la calificación mínima y el estado.")
     
-    st.sidebar.header("Filtros de búsqueda")
-    food_type = st.sidebar.text_input("Tipo de comida (ej: Seafood, Asiática, Vegetariana, etc.)", "")
+    # Mostrar un spinner mientras se cargan los datos
+    with st.spinner("Cargando y procesando datos desde BigQuery..."):
+        df_sentiment = load_and_process_data()
+    
+    # Crear un contenedor para los filtros usando la barra lateral
+    st.sidebar.header("Filtros de Búsqueda")
+    food_type = st.sidebar.text_input("Tipo de comida (ej: Seafood, Asiática, Vegetariana)", "")
     min_rating = st.sidebar.number_input("Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5)
     state = st.sidebar.text_input("Estado (ej: CA, NY, TX)", "")
     
     if st.sidebar.button("Buscar Recomendaciones"):
         results = recommend_restaurants(df_sentiment, food_type, min_rating, state, top_n=5)
+        st.markdown("### Top 5 Recomendaciones")
+        
         if not results.empty:
-            st.write("### Top 5 Recomendaciones")
-            st.dataframe(results)
+            # Usar columnas para mostrar información de cada restaurante
+            for index, row in results.iterrows():
+                with st.container():
+                    st.markdown(f"**{row['name']}**")
+                    col1, col2, col3 = st.columns(3)
+                    col1.write(f"**Estado:** {row['state']}")
+                    col2.write(f"**Ciudad:** {row['city']}")
+                    col3.write(f"**Calificación:** {row['avg_rating']}")
+                    st.write(f"**Tipo de comida:** {row['food_subcategory']}")
+                    st.write(f"**Score combinado:** {row['combined_score']:.2f}")
+                    st.markdown("---")
         else:
-            st.write("No se encontraron restaurantes que cumplan con esos filtros.")
+            st.warning("No se encontraron restaurantes que cumplan con esos filtros.")
 
 if __name__ == "__main__":
     main()
