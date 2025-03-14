@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 
+st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
+
 # URL directa de la imagen de fondo
 background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
 
