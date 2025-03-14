@@ -90,7 +90,7 @@ def main():
 
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
     st.title("🍽️ Recomendador de Restaurantes")
-    st.markdown("### Encuentra el mejor restaurante basado en reseñas y calificaciones")
+    st.markdown("### Encuentra el mejor restaurante y tipo de comida que mejor te guste")
     st.markdown("Utiliza los filtros en la barra lateral para especificar el tipo de comida, la calificación mínima y el estado.")
     
     # Cargar datos preprocesados desde el CSV
