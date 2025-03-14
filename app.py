@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Ruta del CSV con datos preprocesados (asegúrate de que esté en el mismo directorio que app.py)
-CSV_PATH = "datos_preprocesados.csv"
+CSV_PATH = "datos_preprocesados (1).csv"
 
 # Función para cargar los datos desde el CSV
 @st.cache_data
