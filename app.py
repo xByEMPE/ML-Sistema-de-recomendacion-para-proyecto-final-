@@ -5,15 +5,19 @@ import os
 # Configuración de la página: debe ejecutarse antes de cualquier otro comando de Streamlit
 st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
 
-# Inyectar CSS para establecer la imagen de fondo en el contenedor principal
+# URL de la imagen de fondo
+background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
+
+# Inyección de CSS corregida con formato adecuado para evitar NameError
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] {{
-    background: url("{background_image}") no-repeat center center fixed;
-    background-size: contain;  /* Alternativa: auto, cover, 100% 100% */
-    background-position: center;
+    background-image: url("{background_image}");
+    background-size: contain;  /* Alternativa: cover, auto, 100% 100% */
+    background-position: center center;
+    background-repeat: no-repeat;
     background-attachment: fixed;
-    background-color: rgba(255, 255, 255, 0.9);  /* Fondo semitransparente opcional */
+    background-color: rgba(255, 255, 255, 0.9);  /* Fondo blanco semitransparente opcional */
 }}
 </style>
 """
