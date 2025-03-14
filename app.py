@@ -15,20 +15,26 @@ def load_data():
         return None
 
 # Función de recomendación que aplica filtros a los datos
-def recommend_restaurants(df, food_type=None, min_rating=None, state=None, top_n=5):
+def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top_n=5):
     df_filter = df.copy()
     
-    # Filtrar por tipo de comida
-    if food_type:
-        df_filter = df_filter[df_filter["food_subcategory"].str.contains(food_type, case=False, na=False)]
+    # Filtrar por tipos de comida (si se seleccionó al menos uno)
+    if food_types:
+        df_filter = df_filter[
+            df_filter["food_subcategory"].str.lower().apply(
+                lambda x: any(ft.lower() in x for ft in food_types)
+            )
+        ]
     
     # Filtrar por calificación mínima
     if min_rating is not None:
         df_filter = df_filter[df_filter["avg_rating"] >= min_rating]
     
-    # Filtrar por estado (comparando en mayúsculas)
-    if state:
-        df_filter = df_filter[df_filter["state"].str.upper() == state.upper()]
+    # Filtrar por estados (si se seleccionó al menos uno)
+    if states:
+        df_filter = df_filter[
+            df_filter["state"].str.upper().isin([s.upper() for s in states])
+        ]
     
     # Ordenar por score combinado descendente y seleccionar columnas de interés
     df_filter = df_filter.sort_values("combined_score", ascending=False)
@@ -41,35 +47,57 @@ def main():
     st.title("🍽️ Recomendador de Restaurantes")
     st.markdown("### Encuentra el mejor restaurante basado en reseñas y calificaciones")
     st.markdown("Utiliza los filtros en la barra lateral para especificar el tipo de comida, la calificación mínima y el estado.")
-
+    
     # Cargar datos preprocesados desde el CSV
     df = load_data()
     if df is not None:
         st.sidebar.header("Filtros de Búsqueda")
         
-        # Corrección de texto en text_input y number_input
-        food_type = st.sidebar.text_input(
-            "Tipos de comida disponibles: (Bakeries, Seafood, Mexicana/Latina, Coffee & Tea, Bars, "
-            "General Food, Asiática, Restaurants, Vegetariana/Vegana, "
-            "Juice Bars & Smoothies, Fast Food, Food Trucks, Pizza, "
-            "Ice Cream & Frozen Yogurt, Italiana, Bubble Tea, "
-            "Mediterránea/Medio Oriente, Shopping, Caribeña, Europea, "
-            "Gluten-Free, Halal, Hawaiana, Kosher)", 
-            ""
+        # Lista de tipos de comida disponibles
+        available_food_types = [
+            "Bakeries", "Seafood", "Mexicana/Latina", "Coffee & Tea", "Bars", 
+            "General Food", "Asiática", "Restaurants", "Vegetariana/Vegana", 
+            "Juice Bars & Smoothies", "Fast Food", "Food Trucks", "Pizza", 
+            "Ice Cream & Frozen Yogurt", "Italiana", "Bubble Tea", 
+            "Mediterránea/Medio Oriente", "Shopping", "Caribeña", "Europea", 
+            "Gluten-Free", "Halal", "Hawaiana", "Kosher"
+        ]
+        
+        # Selector múltiple para tipos de comida (máximo 3)
+        selected_food_types = st.sidebar.multiselect(
+            "Tipos de comida disponibles (máximo 3)",
+            options=available_food_types,
+            default=[]
         )
-
+        
+        if len(selected_food_types) > 3:
+            st.sidebar.error("Por favor, selecciona máximo 3 tipos de comida.")
+        
+        # Selector para calificación mínima
         min_rating = st.sidebar.number_input(
             "Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5
         )
-
-        state = st.sidebar.text_input(
-            "Estados disponibles: 'AZ', 'PA', 'LA', 'CA', 'MO', 'AB', 'IN', 'NV', 'NJ', 'FL', 'TN', "
-            "'IL', 'DE', 'ID', 'CO', 'HI', 'MI', 'TX', 'VT', 'WA', 'VI'", 
-            ""
+        
+        # Definir los estados disponibles basados en los tipos de comida seleccionados
+        if selected_food_types:
+            filtered_df = df[
+                df["food_subcategory"].str.lower().apply(
+                    lambda x: any(ft.lower() in x for ft in selected_food_types)
+                )
+            ]
+            available_states = sorted(filtered_df["state"].unique())
+        else:
+            available_states = sorted(df["state"].unique())
+        
+        # Selector múltiple para estados
+        selected_states = st.sidebar.multiselect(
+            "Estados disponibles",
+            options=available_states,
+            default=available_states
         )
-
+        
         if st.sidebar.button("Buscar Recomendaciones"):
-            results = recommend_restaurants(df, food_type, min_rating, state, top_n=5)
+            results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=5)
             st.markdown("### Top 5 Recomendaciones")
             
             if not results.empty:
