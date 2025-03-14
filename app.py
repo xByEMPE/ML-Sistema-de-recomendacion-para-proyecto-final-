@@ -46,13 +46,13 @@ def main():
     df = load_data()
     if df is not None:
         st.sidebar.header("Filtros de Búsqueda")
-        food_type = st.sidebar.text_input("Tipos de comida disponibles: (Bakeries, Seafood, Mexicana/Latina, Coffee & Tea, Bars,
+        food_type = st.sidebar.text_input"("Tipos de comida disponibles: (Bakeries, Seafood, Mexicana/Latina, Coffee & Tea, Bars,
  General Food, Asiática, Restaurants, Vegetariana/Vegana,
  Juice Bars & Smoothies, Fast Food, Food Trucks, Pizza,
  Ice Cream & Frozen Yogurt, Italiana, Bubble Tea,
  Mediterránea/Medio Oriente, Shopping, Caribeña, Europea
  Gluten-Free, Halal, Hawaiana, Kosher)", "")
-        min_rating = st.sidebar.number_input("Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5)
+        min_rating = st.sidebar.number_input"("Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5)
         state = st.sidebar.text_input("Estados disponibles:'AZ', 'PA', 'LA', 'CA', 'MO', 'AB', 'IN', 'NV', 'NJ', 'FL', 'TN', 'IL', 'DE', 'ID',
  'CO', 'HI', 'MI', 'TX', 'VT', 'WA', 'VI'])", "")
         
