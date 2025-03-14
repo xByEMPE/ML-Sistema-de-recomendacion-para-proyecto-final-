@@ -2,6 +2,25 @@ import streamlit as st
 import pandas as pd
 import os
 
+# URL directa de la imagen de fondo
+background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
+
+# Inyectar CSS para cambiar el fondo
+page_bg_img = f"""
+<style>
+body {{
+    background-image: url("{background_image}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}}
+</style>
+"""
+
+st.markdown(page_bg_img, unsafe_allow_html=True)
+st.title("Aplicación con fondo personalizado")
+
+
 # Ruta del CSV con datos preprocesados (asegúrate de que esté en el mismo directorio que app.py)
 CSV_PATH = "datos_preprocesados (1).csv"
 
