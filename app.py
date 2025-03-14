@@ -31,7 +31,6 @@ h1, h2, h3 {{ color: white !important; }}
 st.markdown(custom_css, unsafe_allow_html=True)
 
 CSV_PATH = "datos_preprocesados (1).csv"
-BUSINESS_PATH = "Business.csv"
 
 state_mapping = {
     "AZ": "Arizona", "PA": "Pennsylvania", "LA": "Louisiana", "CA": "California",
