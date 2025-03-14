@@ -6,7 +6,7 @@ import os
 st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
 
 # Inyectar CSS para establecer la imagen de fondo en el contenedor principal
-background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
+background_image = "https://cdn.pixabay.com/photo/2016/10/04/05/21/bar-1713610_1280.jpg"
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] {{
