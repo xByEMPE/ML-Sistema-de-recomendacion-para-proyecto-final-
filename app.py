@@ -3,21 +3,42 @@ import pandas as pd
 import os
 
 # Configuración de la página: debe ejecutarse antes de cualquier otro comando de Streamlit
-st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
+st.set_page_config(page_title="Encuentra la mejor opción para tu paladar", layout="wide")
 
-# Inyectar CSS para establecer la imagen de fondo en el contenedor principal
+# URL de la imagen de fondo
 background_image = "https://cdn.pixabay.com/photo/2016/10/04/05/21/bar-1713610_1280.jpg"
-page_bg_img = f"""
+
+# Inyección de CSS para mejorar visibilidad
+custom_css = f"""
 <style>
+/* Fondo de la aplicación */
 [data-testid="stAppViewContainer"] {{
-    background-image: url("{background_image}");
+    background: url("{background_image}") no-repeat center center fixed;
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+}}
+
+/* Agrega un fondo semitransparente a los resultados */
+.result-container {{
+    background: rgba(0, 0, 0, 0.7);  /* Fondo negro semitransparente */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    color: white;
+}}
+
+/* Ajustar el color del título y subtítulos */
+h1, h2, h3 {{
+    color: white !important;
+}}
+
+/* Mejorar visibilidad de la barra lateral */
+[data-testid="stSidebar"] {{
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: white;
 }}
 </style>
 """
-st.markdown(page_bg_img, unsafe_allow_html=True)
+st.markdown(custom_css, unsafe_allow_html=True)
 
 # Ruta del CSV con datos preprocesados
 CSV_PATH = "datos_preprocesados (1).csv"
@@ -145,23 +166,24 @@ def main():
             st.session_state.results = None
             st.session_state.selected_food_types = []
             st.session_state.selected_states = []
-            st.session_state.min_rating = 3.0  # Restablecer calificación a su valor predeterminado
+            st.session_state.min_rating = 3.0
         
-        # Mostrar resultados
+        # Mostrar resultados con fondo semitransparente
         if st.session_state.results is not None:
             st.markdown("### Top 10 Recomendaciones")
-            if not st.session_state.results.empty:
-                for idx, row in st.session_state.results.iterrows():
-                    with st.container():
-                        st.markdown(f"**{row['name']}**")
-                        cols = st.columns(3)
-                        cols[0].write(f"**Estado:** {state_mapping.get(row['state'], row['state'])}")
-                        cols[1].write(f"**Ciudad:** {row['city']}")
-                        cols[2].write(f"**Score:** {row['combined_score']:.2f}")
-                        st.write(f"**Tipo de comida:** {row['food_subcategory']}")
-                        st.markdown("---")
-            else:
-                st.warning("No se encontraron restaurantes que cumplan con esos filtros.")
+            for idx, row in st.session_state.results.iterrows():
+                st.markdown(
+                    f"""
+                    <div class='result-container'>
+                        <h4>{row['name']}</h4>
+                        <p><b>Estado:</b> {state_mapping.get(row['state'], row['state'])}</p>
+                        <p><b>Ciudad:</b> {row['city']}</p>
+                        <p><b>Score:</b> {row['combined_score']:.2f}</p>
+                        <p><b>Tipo de comida:</b> {row['food_subcategory']}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
 if __name__ == "__main__":
     main()
