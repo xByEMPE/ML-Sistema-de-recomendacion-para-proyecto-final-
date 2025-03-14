@@ -6,18 +6,19 @@ import os
 st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
 
 # Inyectar CSS para establecer la imagen de fondo en el contenedor principal
-background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] {{
-    background-image: url("{background_image}");
-    background-size: cover;
+    background: url("{background_image}") no-repeat center center fixed;
+    background-size: contain;  /* Alternativa: auto, cover, 100% 100% */
     background-position: center;
-    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: rgba(255, 255, 255, 0.9);  /* Fondo semitransparente opcional */
 }}
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
+
 
 # Ruta del CSV con datos preprocesados
 CSV_PATH = "datos_preprocesados (1).csv"
