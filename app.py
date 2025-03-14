@@ -112,6 +112,7 @@ def main():
             default=available_states
         )
         
+        # Botón para buscar recomendaciones
         if st.sidebar.button("Buscar Recomendaciones"):
             results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=5)
             st.markdown("### Top 5 Recomendaciones")
@@ -128,6 +129,10 @@ def main():
                         st.markdown("---")
             else:
                 st.warning("No se encontraron restaurantes que cumplan con esos filtros.")
+        
+        # Botón para limpiar los resultados y reiniciar la búsqueda
+        if st.sidebar.button("Limpiar resultados"):
+            st.experimental_rerun()
 
 if __name__ == "__main__":
     main()
