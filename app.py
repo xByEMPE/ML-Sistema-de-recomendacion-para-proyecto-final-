@@ -69,14 +69,7 @@ def main():
     
     if df is not None:
         st.sidebar.header("Filtros de Búsqueda")
-        available_food_types = [
-            "Bakeries", "Seafood", "Mexicana/Latina", "Coffee & Tea", "Bars", 
-            "General Food", "Asiática", "Restaurants", "Vegetariana/Vegana", 
-            "Juice Bars & Smoothies", "Fast Food", "Food Trucks", "Pizza", 
-            "Ice Cream & Frozen Yogurt", "Italiana", "Bubble Tea", 
-            "Mediterránea/Medio Oriente", "Shopping", "Caribeña", "Europea", 
-            "Gluten-Free", "Halal", "Hawaiana", "Kosher"
-        ]
+        available_food_types = sorted(df["food_subcategory"].dropna().unique())
         selected_food_types = st.sidebar.multiselect("Tipos de comida", options=available_food_types)
         min_rating = st.sidebar.number_input("Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5)
         
@@ -90,10 +83,18 @@ def main():
         selected_cities = st.sidebar.multiselect("Ciudades", options=available_cities)
         
         if st.sidebar.button("Buscar Recomendaciones"):
-            results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, selected_cities, top_n=10)
-            
+            st.session_state.results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, selected_cities, top_n=10)
+        
+        if st.sidebar.button("Limpiar filtros"):
+            st.session_state.results = None
+            st.session_state.selected_food_types = []
+            st.session_state.selected_states = []
+            st.session_state.selected_cities = []
+            st.session_state.min_rating = 3.0
+        
+        if st.session_state.get("results") is not None:
             st.markdown("### Top 10 Recomendaciones")
-            for _, row in results.iterrows():
+            for _, row in st.session_state.results.iterrows():
                 st.markdown(
                     f"""
                     <div class='result-container'>
