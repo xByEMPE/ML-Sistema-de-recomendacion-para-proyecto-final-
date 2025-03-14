@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Configuración de la página: debe ejecutarse antes de cualquier otro comando de Streamlit
-st.set_page_config(page_title="Encuentra la mejor opción para tu paladar", layout="wide")
+st.set_page_config(page_title="Modelo de ML", layout="wide")
 
 # URL de la imagen de fondo
 background_image = "https://cdn.pixabay.com/photo/2016/10/04/05/21/bar-1713610_1280.jpg"
@@ -101,7 +101,7 @@ def main():
         st.session_state.min_rating = 3.0
 
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
-    st.title("🍽️ Recomendador de Restaurantes")
+    st.title("🍽️ Encuentra la mejor opción para tu paladar")
     st.markdown("### Encuentra el mejor restaurante y tipo de comida que mejor te guste")
     st.markdown("Utiliza los filtros en la barra lateral para especificar el tipo de comida, la calificación mínima y el estado.")
     
