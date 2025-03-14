@@ -57,7 +57,7 @@ def load_data():
         return None
 
 # Función de recomendación que aplica filtros a los datos
-def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top_n=5):
+def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top_n=10):
     df_filter = df.copy()
     
     # Filtrar por tipos de comida (si se seleccionó al menos uno)
@@ -144,7 +144,7 @@ def main():
         
         # Botón para buscar recomendaciones
         if st.sidebar.button("Buscar Recomendaciones"):
-            st.session_state.results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=5)
+            st.session_state.results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=10)
         
         # Botón para limpiar resultados
         if st.sidebar.button("Limpiar resultados"):
@@ -152,7 +152,7 @@ def main():
         
         # Mostrar resultados
         if st.session_state.results is not None:
-            st.markdown("### Top 5 Recomendaciones")
+            st.markdown("### Top 10 Recomendaciones")
             if not st.session_state.results.empty:
                 for idx, row in st.session_state.results.iterrows():
                     with st.container():
