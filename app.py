@@ -19,31 +19,16 @@ page_bg_img = f"""
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Ruta del CSV con datos preprocesados (asegúrate de que esté en el mismo directorio que app.py)
+# Ruta del CSV con datos preprocesados
 CSV_PATH = "datos_preprocesados (1).csv"
 
 # Diccionario de mapeo de abreviaturas a nombres completos
 state_mapping = {
-    "AZ": "Arizona",
-    "PA": "Pennsylvania",
-    "LA": "Louisiana",
-    "CA": "California",
-    "MO": "Missouri",
-    "AB": "Alberta",
-    "IN": "Indiana",
-    "NV": "Nevada",
-    "NJ": "New Jersey",
-    "FL": "Florida",
-    "TN": "Tennessee",
-    "IL": "Illinois",
-    "DE": "Delaware",
-    "ID": "Idaho",
-    "CO": "Colorado",
-    "HI": "Hawaii",
-    "MI": "Michigan",
-    "TX": "Texas",
-    "VT": "Vermont",
-    "WA": "Washington",
+    "AZ": "Arizona", "PA": "Pennsylvania", "LA": "Louisiana", "CA": "California",
+    "MO": "Missouri", "AB": "Alberta", "IN": "Indiana", "NV": "Nevada",
+    "NJ": "New Jersey", "FL": "Florida", "TN": "Tennessee", "IL": "Illinois",
+    "DE": "Delaware", "ID": "Idaho", "CO": "Colorado", "HI": "Hawaii",
+    "MI": "Michigan", "TX": "Texas", "VT": "Vermont", "WA": "Washington",
     "VI": "Virgin Islands"
 }
 
@@ -84,9 +69,15 @@ def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top
     return df_filter[columns].head(top_n)
 
 def main():
-    # Inicializar la variable de sesión para almacenar resultados si aún no existe
+    # Inicializar variables de sesión si no existen
     if "results" not in st.session_state:
         st.session_state.results = None
+    if "selected_food_types" not in st.session_state:
+        st.session_state.selected_food_types = []
+    if "selected_states" not in st.session_state:
+        st.session_state.selected_states = []
+    if "min_rating" not in st.session_state:
+        st.session_state.min_rating = 3.0
 
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
     st.title("🍽️ Recomendador de Restaurantes")
@@ -112,7 +103,7 @@ def main():
         selected_food_types = st.sidebar.multiselect(
             "Tipos de comida disponibles (máximo 3)",
             options=available_food_types,
-            default=[]
+            default=st.session_state.selected_food_types
         )
         
         if len(selected_food_types) > 3:
@@ -120,7 +111,7 @@ def main():
         
         # Selector para calificación mínima
         min_rating = st.sidebar.number_input(
-            "Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=3.0, step=0.5
+            "Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=st.session_state.min_rating, step=0.5
         )
         
         # Definir los estados disponibles basados en los tipos de comida seleccionados
@@ -138,17 +129,23 @@ def main():
         selected_states = st.sidebar.multiselect(
             "Estados disponibles",
             options=available_states,
-            default=available_states,
+            default=st.session_state.selected_states,
             format_func=lambda s: state_mapping.get(s, s)
         )
         
         # Botón para buscar recomendaciones
         if st.sidebar.button("Buscar Recomendaciones"):
             st.session_state.results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=10)
+            st.session_state.selected_food_types = selected_food_types
+            st.session_state.selected_states = selected_states
+            st.session_state.min_rating = min_rating
         
-        # Botón para limpiar resultados
+        # Botón para limpiar resultados y filtros
         if st.sidebar.button("Limpiar resultados"):
             st.session_state.results = None
+            st.session_state.selected_food_types = []
+            st.session_state.selected_states = []
+            st.session_state.min_rating = 3.0  # Restablecer calificación a su valor predeterminado
         
         # Mostrar resultados
         if st.session_state.results is not None:
