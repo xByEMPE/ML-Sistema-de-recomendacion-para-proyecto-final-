@@ -49,15 +49,7 @@ def load_data():
         st.error("El archivo CSV no se encontró.")
         return None
 
-@st.cache_data
-def load_business_data():
-    if os.path.exists(BUSINESS_PATH):
-        return pd.read_csv(BUSINESS_PATH)
-    else:
-        st.error("El archivo Business.csv no se encontró.")
-        return None
-
-def recommend_restaurants(df, business_df, food_types=None, min_rating=None, states=None, cities=None, top_n=10):
+def recommend_restaurants(df, food_types=None, min_rating=None, states=None, cities=None, top_n=10):
     df_filter = df.copy()
     if food_types:
         df_filter = df_filter[df_filter["food_subcategory"].str.lower().apply(lambda x: any(ft.lower() in x for ft in food_types))]
@@ -68,16 +60,14 @@ def recommend_restaurants(df, business_df, food_types=None, min_rating=None, sta
     if cities:
         df_filter = df_filter[df_filter["city"].str.lower().isin([c.lower() for c in cities])]
     df_filter = df_filter.sort_values("combined_score", ascending=False)
-    df_filter = df_filter.merge(business_df, on="business_id", how="left")
     return df_filter[["name", "state", "city", "address", "latitude", "longitude", "combined_score", "food_subcategory"]].head(top_n)
 
 def main():
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
     st.title("🍽️ Encuentra la mejor opción para tu paladar")
     df = load_data()
-    business_df = load_business_data()
     
-    if df is not None and business_df is not None:
+    if df is not None:
         st.sidebar.header("Filtros de Búsqueda")
         available_food_types = [
             "Bakeries", "Seafood", "Mexicana/Latina", "Coffee & Tea", "Bars", 
@@ -100,7 +90,7 @@ def main():
         selected_cities = st.sidebar.multiselect("Ciudades", options=available_cities)
         
         if st.sidebar.button("Buscar Recomendaciones"):
-            results = recommend_restaurants(df, business_df, selected_food_types, min_rating, selected_states, selected_cities, top_n=10)
+            results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, selected_cities, top_n=10)
             
             st.markdown("### Top 10 Recomendaciones")
             for _, row in results.iterrows():
