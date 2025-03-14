@@ -2,26 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 
+# Configuración de la página: debe ejecutarse antes de cualquier otro comando de Streamlit
 st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
-
-# URL directa de la imagen de fondo
-background_image = "https://i.pinimg.com/736x/b8/57/f6/b857f6eeed86bc1eda743afec402b194.jpg"
-
-# Inyectar CSS para cambiar el fondo
-page_bg_img = f"""
-<style>
-body {{
-    background-image: url("{background_image}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}}
-</style>
-"""
-
-st.markdown(page_bg_img, unsafe_allow_html=True)
-st.title("Aplicación con fondo personalizado")
-
 
 # Ruta del CSV con datos preprocesados (asegúrate de que esté en el mismo directorio que app.py)
 CSV_PATH = "datos_preprocesados (1).csv"
@@ -63,7 +45,6 @@ def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top
     return df_filter[columns].head(top_n)
 
 def main():
-    st.set_page_config(page_title="Recomendador de Restaurantes", layout="wide")
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
     st.title("🍽️ Recomendador de Restaurantes")
     st.markdown("### Encuentra el mejor restaurante basado en reseñas y calificaciones")
