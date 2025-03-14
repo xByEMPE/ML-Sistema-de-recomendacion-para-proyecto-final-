@@ -73,8 +73,12 @@ def recommend_restaurants(df, food_types=None, min_rating=None, states=None, cit
         ]
     
     df_filter = df_filter.sort_values("combined_score", ascending=False)
-    columns = ["name", "state", "city", "address", "combined_score", "food_subcategory"]
-    return df_filter[columns].head(top_n)
+    
+    # Seleccionar solo las columnas que existen en el DataFrame
+    required_columns = ["name", "state", "city", "address", "combined_score", "food_subcategory"]
+    existing_columns = [col for col in required_columns if col in df_filter.columns]
+    
+    return df_filter[existing_columns].head(top_n)
 
 def main():
     if "results" not in st.session_state:
