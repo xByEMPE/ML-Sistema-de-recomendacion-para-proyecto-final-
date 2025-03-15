@@ -63,7 +63,7 @@ def load_data():
         return None
 
 # Función de recomendación que aplica filtros a los datos
-def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top_n=10):
+def recommend_restaurants(df, food_types=None, min_rating=None, states=None, cities=None, top_n=10):  # <-- NUEVO (cities=None)
     df_filter = df.copy()
     
     # Filtrar por tipos de comida (si se seleccionó al menos uno)
@@ -84,9 +84,15 @@ def recommend_restaurants(df, food_types=None, min_rating=None, states=None, top
             df_filter["state"].str.upper().isin([s.upper() for s in states])
         ]
     
-    # Ordenar por score combinado descendente y seleccionar columnas de interés
+    # Filtrar por ciudades (si se seleccionó al menos una)  # <-- NUEVO
+    if cities:
+        df_filter = df_filter[df_filter["city"].isin(cities)]
+    
+    # Ordenar por score combinado descendente
     df_filter = df_filter.sort_values("combined_score", ascending=False)
-    columns = ["name", "state", "city", "combined_score", "food_subcategory"]
+    
+    # Seleccionar columnas de interés e incluir "address"  # <-- NUEVO
+    columns = ["name", "state", "city", "address", "combined_score", "food_subcategory"]
     return df_filter[columns].head(top_n)
 
 def main():
@@ -97,13 +103,15 @@ def main():
         st.session_state.selected_food_types = []
     if "selected_states" not in st.session_state:
         st.session_state.selected_states = []
+    if "selected_cities" not in st.session_state:  # <-- NUEVO
+        st.session_state.selected_cities = []
     if "min_rating" not in st.session_state:
         st.session_state.min_rating = 3.0
 
     st.image("https://streamlit.io/images/brand/streamlit-logo-secondary-colormark-darktext.png", width=150)
     st.title("🍽️ Encuentra la mejor opción para tu paladar")
     st.markdown("### Encuentra el mejor restaurante y tipo de comida que mejor te guste")
-    st.markdown("Utiliza los filtros en la barra lateral para especificar el tipo de comida, la calificación mínima y el estado.")
+    st.markdown("Utiliza los filtros en la barra lateral para especificar el tipo de comida, la calificación mínima y el estado (y ciudad).")
     
     # Cargar datos preprocesados desde el CSV
     df = load_data()
@@ -135,16 +143,18 @@ def main():
             "Calificación mínima (1 a 5)", min_value=1.0, max_value=5.0, value=st.session_state.min_rating, step=0.5
         )
         
-        # Definir los estados disponibles basados en los tipos de comida seleccionados
+        # Filtrar el DataFrame en base a los tipos de comida (si se han seleccionado) para determinar estados disponibles
         if selected_food_types:
             filtered_df = df[
                 df["food_subcategory"].str.lower().apply(
                     lambda x: any(ft.lower() in x for ft in selected_food_types)
                 )
             ]
-            available_states = sorted(filtered_df["state"].unique())
         else:
-            available_states = sorted(df["state"].unique())
+            filtered_df = df
+        
+        # Determinar estados disponibles
+        available_states = sorted(filtered_df["state"].unique())
         
         # Selector múltiple para estados usando el mapeo para mostrar nombres completos
         selected_states = st.sidebar.multiselect(
@@ -154,11 +164,33 @@ def main():
             format_func=lambda s: state_mapping.get(s, s)
         )
         
+        # Filtrar también por los estados seleccionados para determinar ciudades disponibles  # <-- NUEVO
+        if selected_states:
+            filtered_df = filtered_df[filtered_df["state"].isin(selected_states)]
+        
+        # Determinar ciudades disponibles  # <-- NUEVO
+        available_cities = sorted(filtered_df["city"].unique())
+        
+        # Selector múltiple para ciudades  # <-- NUEVO
+        selected_cities = st.sidebar.multiselect(
+            "Ciudades disponibles",
+            options=available_cities,
+            default=st.session_state.selected_cities
+        )
+        
         # Botón para buscar recomendaciones
         if st.sidebar.button("Buscar Recomendaciones"):
-            st.session_state.results = recommend_restaurants(df, selected_food_types, min_rating, selected_states, top_n=10)
+            st.session_state.results = recommend_restaurants(
+                df,
+                food_types=selected_food_types,
+                min_rating=min_rating,
+                states=selected_states,
+                cities=selected_cities,  # <-- NUEVO
+                top_n=10
+            )
             st.session_state.selected_food_types = selected_food_types
             st.session_state.selected_states = selected_states
+            st.session_state.selected_cities = selected_cities  # <-- NUEVO
             st.session_state.min_rating = min_rating
         
         # Botón para limpiar resultados y filtros
@@ -166,6 +198,7 @@ def main():
             st.session_state.results = None
             st.session_state.selected_food_types = []
             st.session_state.selected_states = []
+            st.session_state.selected_cities = []  # <-- NUEVO
             st.session_state.min_rating = 3.0
         
         # Mostrar resultados con fondo semitransparente
@@ -178,6 +211,7 @@ def main():
                         <h4>{row['name']}</h4>
                         <p><b>Estado:</b> {state_mapping.get(row['state'], row['state'])}</p>
                         <p><b>Ciudad:</b> {row['city']}</p>
+                        <p><b>Dirección:</b> {row['address']}</p>  <!-- NUEVO -->
                         <p><b>Score:</b> {row['combined_score']:.2f}</p>
                         <p><b>Tipo de comida:</b> {row['food_subcategory']}</p>
                     </div>
