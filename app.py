@@ -203,7 +203,7 @@ def main():
         
         # Mostrar resultados con fondo semitransparente
         if st.session_state.results is not None:
-            st.markdown("### Top 10 Recomendaciones")
+            st.markdown("### Te recomendamos los siguientes sitios:")
             for idx, row in st.session_state.results.iterrows():
                 st.markdown(
                     f"""
